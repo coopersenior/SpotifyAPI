@@ -14,7 +14,6 @@ function Spotify() {
   const [albums, setAlbums] = useState([]);
   const [name, setName] = useState("");
 
-
   useEffect(() => {
     // API Acess Token
     var authParameters = {
@@ -53,6 +52,8 @@ function Spotify() {
   }
 
   return (
+    console.log(name),
+    console.log(albums),
     <div className="App">
       <Container>
         <InputGroup className="mb-3" size="lg">
@@ -66,8 +67,8 @@ function Spotify() {
             }}
             onChange={event => setSearchInput(event.target.value)}
           />
-        <Button onClick={ event => {
-            if (event.target.value !== "") {
+        <Button onClick={ () => {
+            if (searchInput !== "") {
               search();
             }
           }
