@@ -52,44 +52,6 @@ function Spotify() {
     // Display those albums to the user 
   }
 
-  // return (
-  //   <div className="App">
-  //     <div className="mb-3" style={{ marginBottom: '1rem' }}>
-  //       <input
-  //         placeholder="Search For Artist"
-  //         type="text"
-  //         onKeyDown={event => {
-  //           if (event.key === 'Enter' && event.target.value !== '') {
-  //             search();
-  //           }
-  //         }}
-  //         onChange={event => setSearchInput(event.target.value)}
-  //       />
-  //       <button onClick={event => {
-  //         if (searchInput !== '') {
-  //           search();
-  //         }
-  //       }}>
-  //         Search
-  //       </button>
-  //     </div>
-  //     <div>
-  //       <p>{name !== '' ? `Showing results for ${name}` : ''}</p>
-  //       <div className="mx-2" style={{ display: 'flex', flexWrap: 'wrap' }}>
-  //         {albums.map((album, i) => (
-  //           <div key={i} style={{ margin: '0.5rem', width: 'calc(25% - 1rem)' }}>
-  //             <img src={album.images[0].url} alt={album.name} />
-  //             <div>
-  //               <p>{album.name}</p>
-  //             </div>
-  //           </div>
-  //         ))}
-  //       </div>
-  //       {/* <p>{(name !== "" ? "People also searched for "+ name : "")}</p> */}
-  //     </div>
-  //   </div>
-  // );
-
   return (
     <div className="App">
       <Container>
