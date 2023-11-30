@@ -1,0 +1,22 @@
+.productStyle {
+    border: 3px solid #3e88ff;
+    border-radius: 10px;
+    width: 200px;
+    padding: 1rem;
+    overflow: scroll;
+    margin: 1rem;
+    font-size: 1rem;
+    text-align: center;
+}
+.productStyle:hover {
+    border-color: #0062ff;
+    background-color: #ecf3ff;
+}
+.inputField {
+    width: 400px;
+    border: 3px solid #3e88ff;
+    padding: 10px;
+    border-radius: 20px;
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+}
