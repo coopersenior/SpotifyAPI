@@ -60,7 +60,7 @@ function Spotify() {
         <h1 style={{ color:'#1ab26b', fontWeight: '550'}}><img src="https://storage.googleapis.com/pr-newsroom-wp/1/2018/11/Spotify_Logo_CMYK_Green-768x231.png" alt="Spotify" className="img-fluid" width="200" style={{marginBottom: '10px'}}/> Album Search</h1>
         <InputGroup className="mb-3" size="lg">
           <FormControl 
-            placeholder="Search For Artist"
+            placeholder="Search By Artist"
             type="input"
             onKeyDown={event => {
               if (event.key === "Enter" && event.target.value !== "") {
