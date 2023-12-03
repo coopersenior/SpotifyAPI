@@ -27,7 +27,16 @@ function Spotify() {
   const [artistPic, setArtistPic] = useState("");
   const [artistName, setArtistName] = useState("");
   const [searched, setSearched] = useState("");
+  const [selectedAlbum, setSelectedAlbum] = useState(null);
+  const [selectedTrackUri, setSelectedTrackUri] = useState("");
+  const [currentIndex, setCurrentIndex] = useState(0);
 
+  // Function to handle going back to search from the selected album view
+  const handleBackToSearch = () => { setSelectedAlbum(null); 
+    setSelectedTrackUri("");
+  };
+
+  // Function to handle the selection of the first search option (Albums)
   const handleSelection1 = (option) => {
     setAlbums([]);
     setSearched("");
@@ -39,6 +48,7 @@ function Spotify() {
     }
   };
 
+   // Function to handle the selection of the second search option (Top Songs)
   const handleSelection2 = (option) => {
     setAlbums([]);
     setSearched("");
@@ -46,22 +56,18 @@ function Spotify() {
       setSelectedOption(null);
     } else {
       setSelectedOption(option);
-      setSearchType(`/top-tracks?market=US`)
+      setSearchType(`/top-tracks?market=US`);
     }
   };
 
   useEffect(() => {
-    // API Acess Token
+    // API Access Token
     var authParameters = {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
       },
-      body:
-        "grant_type=client_credentials&client_id=" +
-        CLIENT_ID +
-        "&client_secret=" +
-        CLIENT_SECRET,
+      body: `grant_type=client_credentials&client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}`,
     };
     fetch("https://accounts.spotify.com/api/token", authParameters)
       .then((result) => result.json())
@@ -148,12 +154,59 @@ function Spotify() {
     // Display those albums to the user
   }
 
+  // Function to play the previous track in the selected album
+  const playPreviousTrack = () => {
+    const previousIndex =
+      (currentIndex - 1 + selectedAlbum.tracks.length) %
+      selectedAlbum.tracks.length;
+    setSelectedTrackUri(selectedAlbum.tracks[previousIndex].uri);
+    setCurrentIndex(previousIndex);
+  };
+
+  // Function to play the next track in the selected album
+  const playNextTrack = () => {
+    const nextIndex = (currentIndex + 1) % selectedAlbum.tracks.length;
+    setSelectedTrackUri(selectedAlbum.tracks[nextIndex].uri);
+    setCurrentIndex(nextIndex);
+  };
+
+  // Function to select and display an album with its tracks
+  const selectAlbum = async (album) => {
+    try {
+      const searchParameters = {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + accessToken,
+        },
+      };
+
+      const response = await fetch(
+        `https://api.spotify.com/v1/albums/${album.id}/tracks`,
+        searchParameters
+      );
+
+      const data = await response.json();
+
+      setSelectedAlbum({
+        ...album,
+        tracks: data.items,
+      });
+
+      // Automatically play the first track in the album
+      if (data.items.length > 0) {
+        setSelectedTrackUri(data.items[0].uri);
+        setCurrentIndex(0);
+      }
+    } catch (error) {
+      console.error("Error fetching album tracks:", error);
+    }
+  };
+
   return (
-    // console.log(name),
-    // console.log(albums),
     <div className="App">
       <Container>
-        <br></br>
+        <br />
         <h1
           style={{
             color: "#1ab26b",
@@ -212,8 +265,6 @@ function Spotify() {
             placeholder="Search By Artist"
             type="input"
             onKeyDown={(event) => {
-              setAlbums([]);
-              setSearched("");
               if (
                 event.key === "Enter" &&
                 event.target.value !== "" &&
@@ -239,52 +290,97 @@ function Spotify() {
           </Button>
         </InputGroup>
       </Container>
-      {selectedOption === "option1" ? (
-      <Container>
-        <p>{(name !== "" && selectedOption !== null && searched !== "" ? "Showing albums by " + name : "")}</p>
-        <Row className="mx-2 row row-cols-4">
-          {albums.map((album, i) => {
-            return (
-              <Card>
+
+      {selectedOption === "option1" && selectedAlbum && (
+        <Container>
+          <Button onClick={handleBackToSearch} variant="light">
+            Back to Search
+          </Button>
+          <p>{`Songs in ${selectedAlbum.name}`}</p>
+          <Row className="mx-2 row row-cols-4">
+            {selectedAlbum.tracks &&
+              selectedAlbum.tracks.map((track, i) => (
+                <Card key={i}>
+                  {track.album && track.album.images && track.album.images.length > 0 ? (
+                    <>
+                      <Card.Img src={track.album.images[0].url} />
+                      <Button
+                        variant="primary"
+                        onClick={() => setSelectedTrackUri(track.uri)}
+                      >
+                        Play
+                      </Button>
+                    </>
+                  ) : (
+                    <Card.Img src={selectedAlbum.images[0].url} alt="albumImg" />
+                  )}
+                  <Card.Body>
+                    <Card.Title>{track.name}</Card.Title>
+                  </Card.Body>
+                </Card>
+              ))}
+          </Row>
+          {selectedTrackUri && (
+            <div>
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <Button onClick={playPreviousTrack}>Previous</Button>
+            <iframe
+             src={`https://open.spotify.com/embed/track/${selectedTrackUri.split(":")[2]}`}
+             width="300"
+             height="80"
+              frameBorder="0"
+               allowtransparency="true"
+              allow="encrypted-media"
+            ></iframe>
+        <Button onClick={playNextTrack}>Next</Button>
+    </div>
+  </div>
+)}
+        </Container>
+      )}
+
+      {selectedOption === "option1" && (
+        <Container>
+          <p>{name && selectedOption && searched && `Showing albums by ${name}`}</p>
+          <Row className="mx-2 row row-cols-4">
+            {albums.map((album, i) => (
+              <Card key={i} onClick={() => selectAlbum(album)}>
                 <Card.Img src={album.images[0].url} />
                 <Card.Body>
                   <Card.Title>{album.name}</Card.Title>
                 </Card.Body>
               </Card>
-            );
-          })}
-        </Row>
-      </Container>) : null}
+            ))}
+          </Row>
+        </Container>
+      )}
 
-      {selectedOption === "option2" ? (
-      <Container>
-        <p>{(name !== "" && selectedOption !== null && searched !== "" ? "Showing top songs by " + name : "")}</p>
-        <Row className="mx-2 row row-cols-4">
-          {albums.map((album, i) => {
-            return (
-              <Card>
+      {selectedOption === "option2" && (
+        <Container>
+          <p>{name && selectedOption && searched && `Showing top songs by ${name}`}</p>
+          <Row className="mx-2 row row-cols-4">
+            {albums.map((album, i) => (
+              <Card key={i}>
                 <Card.Img src={album.album.images[0].url} />
                 <Card.Body>
                   <Card.Title>{album.name}</Card.Title>
                 </Card.Body>
               </Card>
-            );
-          })}
-        </Row>
-      </Container>) : null}
-      
-      {(searchInput !== "" && selectedOption === null && { artistPic } != ""  && searched !== "")? (
+            ))}
+          </Row>
+        </Container>
+      )}
+
+      {searchInput !== "" && !selectedOption && artistPic && searched && (
         <Container>
           <p>{name}</p>
           <Card style={{ border: 'none', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            <Card.Img src={artistPic} style={{ width: '400px', height: '400px', objectFit: 'cover' }}/>
+            <Card.Img src={artistPic} style={{ width: '400px', height: '400px', objectFit: 'cover' }} />
             <Card.Body>
               <Card.Title>{artistName}</Card.Title>
             </Card.Body>
           </Card>
         </Container>
-      ) : (
-        ""
       )}
     </div>
   );
