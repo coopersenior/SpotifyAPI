@@ -40,6 +40,8 @@ function Spotify() {
   const handleSelection1 = (option) => {
     setAlbums([]);
     setSearched("");
+    setSelectedTrackUri("");
+    setSelectedAlbum(null); 
     if (selectedOption === "option1") {
       setSelectedOption(null);
     } else {
@@ -52,6 +54,8 @@ function Spotify() {
   const handleSelection2 = (option) => {
     setAlbums([]);
     setSearched("");
+    setSelectedTrackUri("");
+    setSelectedAlbum(null); 
     if (selectedOption === "option2") {
       setSelectedOption(null);
     } else {
