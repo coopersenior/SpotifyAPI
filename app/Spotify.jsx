@@ -32,7 +32,8 @@ function Spotify() {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   // Function to handle going back to search from the selected album view
-  const handleBackToSearch = () => { setSelectedAlbum(null); 
+  const handleBackToSearch = () => {
+    setSelectedAlbum(null);
     setSelectedTrackUri("");
   };
 
@@ -41,7 +42,7 @@ function Spotify() {
     setAlbums([]);
     setSearched("");
     setSelectedTrackUri("");
-    setSelectedAlbum(null); 
+    setSelectedAlbum(null);
     if (selectedOption === "option1") {
       setSelectedOption(null);
     } else {
@@ -50,12 +51,12 @@ function Spotify() {
     }
   };
 
-   // Function to handle the selection of the second search option (Top Songs)
+  // Function to handle the selection of the second search option (Top Songs)
   const handleSelection2 = (option) => {
     setAlbums([]);
     setSearched("");
     setSelectedTrackUri("");
-    setSelectedAlbum(null); 
+    setSelectedAlbum(null);
     if (selectedOption === "option2") {
       setSelectedOption(null);
     } else {
@@ -81,6 +82,7 @@ function Spotify() {
       );
   }, []);
 
+  // Display artist profile
   async function searchArtist() {
     setAlbums([]);
     // Get request using search to get Artist ID
@@ -97,13 +99,12 @@ function Spotify() {
     )
       .then((response) => response.json())
       .then((data) => {
-        return data.artists.items[0].id;
+                return data.artists.items[0].id;
       });
 
     // Get request with Artist ID grab all the albums from that artist
     await fetch(
       "https://api.spotify.com/v1/artists/" + artistID,
-      // change this for search line
       searchParameters
     ) // album,sinle gets more stuff
       .then((response) => response.json())
@@ -137,11 +138,9 @@ function Spotify() {
 
     // Get request with Artist ID grab all the albums from that artist
     await fetch(
-      "https://api.spotify.com/v1/artists/" +
-        artistID +
-        searchType,
+      "https://api.spotify.com/v1/artists/" + artistID + searchType,
       searchParameters
-    ) // album,sinle gets more stuff
+    ) 
       .then((response) => response.json())
       .then((data) => {
         if (searchType === "/top-tracks?market=US") {
@@ -232,14 +231,14 @@ function Spotify() {
           type="radio"
           name="options"
           defaultValue={null}
-          allowUnselect
         >
           <ToggleButton
             id="option1"
             value="option1"
             variant="light"
             style={{
-              backgroundColor: selectedOption === "option1" ? "#1ab26b" : "white",
+              backgroundColor:
+                selectedOption === "option1" ? "#1ab26b" : "white",
               color: selectedOption === "option1" ? "white" : "black",
               border: "1px solid black",
             }}
@@ -252,7 +251,8 @@ function Spotify() {
             value="option2"
             variant="light"
             style={{
-              backgroundColor: selectedOption === "option2" ? "#1ab26b" : "white",
+              backgroundColor:
+                selectedOption === "option2" ? "#1ab26b" : "white",
               color: selectedOption === "option2" ? "white" : "black",
               border: "1px solid black",
             }}
@@ -305,7 +305,9 @@ function Spotify() {
             {selectedAlbum.tracks &&
               selectedAlbum.tracks.map((track, i) => (
                 <Card key={i}>
-                  {track.album && track.album.images && track.album.images.length > 0 ? (
+                  {track.album &&
+                  track.album.images &&
+                  track.album.images.length > 0 ? (
                     <>
                       <Card.Img src={track.album.images[0].url} />
                       <Button
@@ -316,7 +318,10 @@ function Spotify() {
                       </Button>
                     </>
                   ) : (
-                    <Card.Img src={selectedAlbum.images[0].url} alt="albumImg" />
+                    <Card.Img
+                      src={selectedAlbum.images[0].url}
+                      alt="albumImg"
+                    />
                   )}
                   <Card.Body>
                     <Card.Title>{track.name}</Card.Title>
@@ -326,26 +331,29 @@ function Spotify() {
           </Row>
           {selectedTrackUri && (
             <div>
-            <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <Button onClick={playPreviousTrack}>Previous</Button>
-            <iframe
-             src={`https://open.spotify.com/embed/track/${selectedTrackUri.split(":")[2]}`}
-             width="300"
-             height="80"
-              frameBorder="0"
-               allowtransparency="true"
-              allow="encrypted-media"
-            ></iframe>
-        <Button onClick={playNextTrack}>Next</Button>
-    </div>
-  </div>
-)}
+              <div style={{ display: "flex", justifyContent: "center" }}>
+                <Button onClick={playPreviousTrack}>Previous</Button>
+                <iframe
+                  src={`https://open.spotify.com/embed/track/${
+                    selectedTrackUri.split(":")[2]
+                  }`}
+                  width="300"
+                  height="80"
+                  allowtransparency="true"
+                  allow="encrypted-media"
+                ></iframe>
+                <Button onClick={playNextTrack}>Next</Button>
+              </div>
+            </div>
+          )}
         </Container>
       )}
 
       {selectedOption === "option1" && (
         <Container>
-          <p>{name && selectedOption && searched && `Showing albums by ${name}`}</p>
+          <p>
+            {name && selectedOption && searched && `Showing albums by ${name}`}
+          </p>
           <Row className="mx-2 row row-cols-4">
             {albums.map((album, i) => (
               <Card key={i} onClick={() => selectAlbum(album)}>
@@ -361,7 +369,12 @@ function Spotify() {
 
       {selectedOption === "option2" && (
         <Container>
-          <p>{name && selectedOption && searched && `Showing top songs by ${name}`}</p>
+          <p>
+            {name &&
+              selectedOption &&
+              searched &&
+              `Showing top songs by ${name}`}
+          </p>
           <Row className="mx-2 row row-cols-4">
             {albums.map((album, i) => (
               <Card key={i}>
@@ -378,8 +391,18 @@ function Spotify() {
       {searchInput !== "" && !selectedOption && artistPic && searched && (
         <Container>
           <p>{name}</p>
-          <Card style={{ border: 'none', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            <Card.Img src={artistPic} style={{ width: '400px', height: '400px', objectFit: 'cover' }} />
+          <Card
+            style={{
+              border: "none",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Card.Img
+              src={artistPic}
+              style={{ width: "400px", height: "400px", objectFit: "cover" }}
+            />
             <Card.Body>
               <Card.Title>{artistName}</Card.Title>
             </Card.Body>
